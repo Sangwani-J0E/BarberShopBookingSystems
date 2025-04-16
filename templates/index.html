@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIMO FIRST CLASS Barber Shop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">TIMO FIRST CLASS</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/about">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/pricing">Pricing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact">Contact</a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/booking">Book Now</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/notifications">Notifications{% if notifications|length > 0 %} ({{ notifications|length }}){% endif %}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/history">History</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/logout">Logout</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/login">Login/Signup</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-section text-center text-white">
+        <div class="container">
+            <h1 class="display-4 animate" data-animate="fadeInUp">Welcome to TIMO FIRST CLASS Barber Shop</h1>
+            <p class="lead animate" data-animate="fadeInUp" data-delay="0.2s">Experience premium grooming services tailored just for you.</p>
+            <div class="mt-4 animate" data-animate="fadeInUp" data-delay="0.4s">
+                <a href="/booking" class="btn btn-primary btn-lg me-3">Book Now</a>
+                <a href="/contact" class="btn btn-outline-light btn-lg">Get in Touch</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="services-section py-5">
+        <div class="container">
+            <h2 class="text-center mb-5 animate" data-animate="fadeInUp">Our Services</h2>
+            <div class="row">
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
+                    <div class="section-card h-100 animate" data-animate="fadeIn" data-delay="0.1s">
+                        <div class="card-icon">
+                            <i class="bi bi-scissors"></i>
+                        </div>
+                        <h5 class="card-title">Hair Cut</h5>
+                        <p class="card-text">Precision cuts tailored to your style, from classic to modern fades.</p>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
+                    <div class="section-card h-100 animate" data-animate="fadeIn" data-delay="0.2s">
+                        <div class="card-icon">
+                            <i class="bi bi-droplet"></i>
+                        </div>
+                        <h5 class="card-title">Hair Conditioning</h5>
+                        <p class="card-text">Nourish and revitalize your hair with our premium conditioning treatments.</p>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
+                    <div class="section-card h-100 animate" data-animate="fadeIn" data-delay="0.3s">
+                        <div class="card-icon">
+                            <i class="bi bi-brush"></i>
+                        </div>
+                        <h5 class="card-title">Beard and Trimming</h5>
+                        <p class="card-text">Expert grooming for a sharp beard or clean trim, with a hot-towel finish.</p>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
+                    <div class="section-card h-100 animate" data-animate="fadeIn" data-delay="0.4s">
+                        <div class="card-icon">
+                            <i class="bi bi-palette"></i>
+                        </div>
+                        <h5 class="card-title">Tint and Hair Styling</h5>
+                        <p class="card-text">Bold colors and custom styling to make your look stand out.</p>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
+                    <div class="section-card h-100 animate" data-animate="fadeIn" data-delay="0.5s">
+                        <div class="card-icon">
+                            <i class="bi bi-gift"></i>
+                        </div>
+                        <h5 class="card-title">Gift Vouchers</h5>
+                        <p class="card-text">Give the gift of grooming with our flexible gift vouchers.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2025 TIMO FIRST CLASS Barber Shop. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animation Observer
+            const elements = document.querySelectorAll('.animate');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const el = entry.target;
+                        const animation = el.dataset.animate;
+                        const delay = el.dataset.delay || '0s';
+                        el.style.animation = `${animation} 1s ease-out ${delay} forwards`;
+                        observer.unobserve(el);
+                    }
+                });
+            }, { threshold: 0.2 });
+            elements.forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - TIMO FIRST CLASS Barber Shop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pricing.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">TIMO FIRST CLASS</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/pricing">Pricing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact">Contact</a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/booking">Book Now</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/notifications">Notifications{% if notifications|length > 0 %} ({{ notifications|length }}){% endif %}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/history">History</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/logout">Logout</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/login">Login/Signup</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="pricing-section py-5">
+        <div class="container">
+            <h1 class="text-center mb-4 animate" data-animate="fadeInUp">Pricing at TIMO FIRST CLASS</h1>
+            <p class="text-center mb-5 animate" data-animate="fadeInUp" data-delay="0.2s">Premium grooming services at affordable prices, tailored to your needs.</p>
+            <div class="row">
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
+                    <div class="section-card h-100 animate" data-animate="fadeIn" data-delay="0.1s">
+                        <div class="card-image">
+                            <img src="{{ url_for('static', filename='images/vip-cut-1.jpg') }}" alt="VIP Cut 1" class="card-img primary-img">
+                            <img src="{{ url_for('static', filename='images/vip-cut-2.jpg') }}" alt="VIP Cut 2" class="card-img secondary-img">
+                        </div>
+                        <h3 class="card-title">VIP Cut</h3>
+                        <p class="card-text">A premium haircut with personalized styling and extra attention to detail.</p>
+                        <h4 class="price">K5000</h4>
+                        <a href="/booking?service=VIP%20Cut&price=5000" class="btn btn-primary btn-lg me-3">Book Now</a>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
+                    <div class="section-card h-100 animate" data-animate="fadeIn" data-delay="0.2s">
+                        <div class="card-image">
+                            <img src="{{ url_for('static', filename='images/basic-cut-1.jpg') }}" alt="Basic Cut 1" class="card-img primary-img">
+                            <img src="{{ url_for('static', filename='images/basic-cut-2.jpg') }}" alt="Basic Cut 2" class="card-img secondary-img">
+                        </div>
+                        <h3 class="card-title">Basic Cut</h3>
+                        <p class="card-text">A classic haircut, clean and sharp, perfect for any style.</p>
+                        <h4 class="price">K3000</h4>
+                        <a href="/booking?service=Basic%20Cut&price=3000" class="btn btn-primary btn-lg me-3">Book Now</a>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
+                    <div class="section-card h-100 animate" data-animate="fadeIn" data-delay="0.3s">
+                        <div class="card-image">
+                            <img src="{{ url_for('static', filename='images/cut-wash-1.jpg') }}" alt="Cut and Wash 1" class="card-img primary-img">
+                            <img src="{{ url_for('static', filename='images/cut-wash-2.jpg') }}" alt="Cut and Wash 2" class="card-img secondary-img">
+                        </div>
+                        <h3 class="card-title">Cut and Wash</h3>
+                        <p class="card-text">A refreshing haircut paired with a soothing wash for a complete grooming experience.</p>
+                        <h4 class="price">K5000</h4>
+                        <a href="/booking?service=Cut%20and%20Wash&price=5000" class="btn btn-primary btn-lg me-3">Book Now</a>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
+                    <div class="section-card h-100 animate" data-animate="fadeIn" data-delay="0.4s">
+                        <div class="card-image">
+                            <img src="{{ url_for('static', filename='images/kids-cut-1.jpg') }}" alt="Kids Cut 1" class="card-img primary-img">
+                            <img src="{{ url_for('static', filename='images/kids-cut-2.jpg') }}" alt="Kids Cut 2" class="card-img secondary-img">
+                        </div>
+                        <h3 class="card-title">Kids Cut</h3>
+                        <p class="card-text">Gentle and fun haircuts designed for kids, keeping them stylish and comfortable.</p>
+                        <h4 class="price">K2000</h4>
+                        <a href="/booking?service=Kids%20Cut&price=2000" class="btn btn-primary btn-lg me-3">Book Now</a>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
+                    <div class="section-card h-100 animate" data-animate="fadeIn" data-delay="0.5s">
+                        <div class="card-image">
+                            <img src="{{ url_for('static', filename='images/facial-1.jpg') }}" alt="Facial Treatment 1" class="card-img primary-img">
+                            <img src="{{ url_for('static', filename='images/facial-2.jpg') }}" alt="Facial Treatment 2" class="card-img secondary-img">
+                        </div>
+                        <h3 class="card-title">Facial Treatment</h3>
+                        <p class="card-text">Revitalize your skin with our deep-cleansing and hydrating facial treatments.</p>
+                        <h4 class="price">K10,000</h4>
+                        <a href="/booking?service=Facial%20Treatment&price=10000" class="btn btn-primary btn-lg me-3">Book Now</a>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
+                    <div class="section-card h-100 animate" data-animate="fadeIn" data-delay="0.6s">
+                        <div class="card-image">
+                            <img src="{{ url_for('static', filename='images/conditioning-1.jpg') }}" alt="Hair Conditioning 1" class="card-img primary-img">
+                            <img src="{{ url_for('static', filename='images/conditioning-2.jpg') }}" alt="Hair Conditioning 2" class="card-img secondary-img">
+                        </div>
+                        <h3 class="card-title">Hair Conditioning</h3>
+                        <p class="card-text">Nourish and strengthen your hair with our premium conditioning treatments.</p>
+                        <h4 class="price">K6000</h4>
+                        <a href="/booking?service=Hair%20Conditioning&price=6000" class="btn btn-primary btn-lg me-3">Book Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2025 TIMO FIRST CLASS Barber Shop. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const elements = document.querySelectorAll('.animate');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const el = entry.target;
+                        const animation = el.dataset.animate;
+                        const delay = el.dataset.delay || '0s';
+                        el.style.animation = `${animation} 1s ease-out ${delay} forwards`;
+                        observer.unobserve(el);
+                    }
+                });
+            }, { threshold: 0.2 });
+            elements.forEach(el => observer.observe(el));
+
+            const cards = document.querySelectorAll('.section-card');
+            cards.forEach(card => {
+                const primaryImg = card.querySelector('.primary-img');
+                const secondaryImg = card.querySelector('.secondary-img');
+                let isPrimary = true;
+
+                const toggleImages = () => {
+                    isPrimary = !isPrimary;
+                    primaryImg.style.opacity = isPrimary ? 1 : 0;
+                    secondaryImg.style.opacity = isPrimary ? 0 : 1;
+                };
+
+                let interval = setInterval(toggleImages, 5000);
+
+                card.addEventListener('mouseenter', () => {
+                    clearInterval(interval);
+                    primaryImg.style.opacity = 0;
+                    secondaryImg.style.opacity = 1;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    primaryImg.style.opacity = 1;
+                    secondaryImg.style.opacity = 0;
+                    isPrimary = true;
+                    interval = setInterval(toggleImages, 5000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

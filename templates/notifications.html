@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - TIMO FIRST CLASS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/notifications.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">TIMO FIRST CLASS</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/pricing">Pricing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/booking">Book Now</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/notifications">Notifications{% if notifications|length > 0 %} ({{ notifications|length }}){% endif %}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/history">History</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="notifications-section py-5">
+        <div class="container">
+            <h1 class="text-center mb-4 animate" data-animate="fadeInUp">Notifications</h1>
+            {% if notifications %}
+                <div class="row">
+                    {% for notification in notifications %}
+                        <div class="col-12 col-md-6 col-lg-4 mb-4">
+                            <div class="section-card h-100 animate" data-animate="fadeIn" data-delay="{{ loop.index0 * 0.1 }}s">
+                                <div class="card-icon">
+                                    {% if 'confirmed' in notification.message.lower() %}
+                                        <i class="bi bi-check-circle"></i>
+                                    {% elif 'cancelled' in notification.message.lower() %}
+                                        <i class="bi bi-x-circle"></i>
+                                    {% else %}
+                                        <i class="bi bi-bell"></i>
+                                    {% endif %}
+                                </div>
+                                <p class="card-text {{ 'fw-bold' if not notification.read else '' }}">
+                                    {{ notification.message }}<br>
+                                    <small class="text-muted">{{ notification.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                                </p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-center animate" data-animate="fadeIn" data-delay="0.3s">No notifications.</p>
+            {% endif %}
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2025 TIMO FIRST CLASS Barber Shop. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animation Observer
+            const elements = document.querySelectorAll('.animate');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const el = entry.target;
+                        const animation = el.dataset.animate;
+                        const delay = el.dataset.delay || '0s';
+                        el.style.animation = `${animation} 1s ease-out ${delay} forwards`;
+                        observer.unobserve(el);
+                    }
+                });
+            }, { threshold: 0.2 });
+            elements.forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>

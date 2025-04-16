@@ -1,0 +1,586 @@
+/* Gold, White, Black UI/UX for TIMO FIRST CLASS Barber Shop */
+:root {
+    --primary-color: #FFD700;
+    --secondary-color: #333333;
+    --background-color: #F5F5F5;
+    --card-background: #FFFFFF;
+    --text-color: #000000;
+    --muted-text: #666666;
+    --navbar-background: #000000;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --border-radius: 12px;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Navbar */
+.navbar {
+    background: var(--navbar-background);
+    box-shadow: var(--shadow);
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.nav-link {
+    font-size: 1rem;
+    color: var(--primary-color);
+    transition: color 0.2s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: #D4AF37;
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    padding: 0 1rem;
+}
+
+/* Headings */
+h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+/* Toggle Buttons */
+.toggle-container {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.toggle-btn {
+    background: var(--card-background);
+    border: 1px solid var(--muted-text);
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-color);
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow);
+}
+
+.toggle-btn:hover {
+    background: #E5E5E5;
+}
+
+.toggle-btn.active {
+    background: var(--primary-color);
+    color: var(--text-color);
+    border-color: var(--primary-color);
+}
+
+/* Section Card */
+.section-card {
+    background: var(--card-background);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+}
+
+/* Calendar */
+#calendar {
+    max-width: 100%;
+    margin: 0 auto;
+    font-size: 1rem;
+}
+
+.fc {
+    background: var(--card-background);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.fc-toolbar {
+    padding: 0.75rem;
+    background: var(--navbar-background);
+    color: var(--primary-color);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.fc-toolbar-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.fc-button {
+    background: var(--primary-color) !important;
+    border: none !important;
+    color: var(--text-color) !important;
+    border-radius: 8px !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 0.9rem !important;
+    transition: background 0.2s ease !important;
+}
+
+.fc-button:hover {
+    background: #D4AF37 !important;
+}
+
+.fc-button:focus,
+.fc-button:active,
+.fc-button.fc-button-active {
+    background: #D4AF37 !important;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2) !important;
+}
+
+.fc-daygrid-day {
+    cursor: pointer;
+    transition: background 0.2s ease;
+    background: var(--card-background);
+}
+
+.fc-daygrid-day.fc-day-holiday {
+    background: #E5E5E5;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.fc-daygrid-day-number {
+    color: var(--text-color);
+    font-size: 0.9rem;
+    padding: 0.5rem;
+}
+
+.fc-daygrid-day-number.fc-day-holiday {
+    color: var(--muted-text);
+}
+
+.fc-daygrid-event {
+    font-size: 0.8rem;
+    padding: 0.25rem;
+    border-radius: 4px;
+    background: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+}
+
+.fc-daygrid-day-frame {
+    min-height: 80px;
+}
+
+/* Form Elements */
+.form-control,
+.form-select {
+    border-radius: 8px;
+    border: 1px solid var(--muted-text);
+    padding: 0.75rem;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+    outline: none;
+}
+
+.form-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+/* Price Display */
+.price-display {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #333;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.price-display i {
+    margin-right: 0.5rem;
+    color: #28a745;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.loading-spinner p {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--muted-text);
+}
+
+/* Buttons */
+.btn-primary {
+    background: var(--primary-color);
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-color);
+    transition: background 0.2s ease;
+}
+
+.btn-primary:hover {
+    background: #D4AF37;
+}
+
+.btn-primary:disabled {
+    background: #E5E5E5;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    background: var(--muted-text);
+    color: var(--card-background);
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+/* Slots Sidebar */
+#slotsSidebar {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 400px;
+    height: 100%;
+    background: var(--card-background);
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
+    transition: right 0.3s ease;
+    z-index: 1050;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+#slotsSidebar.active {
+    right: 0;
+}
+
+#slotsContainer {
+    margin-top: 1rem;
+}
+
+.slot-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    background: #F9F9F9;
+    transition: background 0.2s ease;
+}
+
+.slot-item:hover {
+    background: #E5E5E5;
+}
+
+.slot-item .text-success {
+    color: #28A745;
+}
+
+.slot-item .text-danger {
+    color: #DC3545;
+}
+
+.slot-item button {
+    font-size: 0.875rem;
+}
+
+/* Your Bookings */
+.booking-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.booking-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--muted-text);
+    font-size: 1rem;
+    color: var(--text-color);
+    transition: background 0.2s ease;
+}
+
+.booking-item:last-child {
+    border-bottom: none;
+}
+
+.booking-item:hover {
+    background: #F9F9F9;
+}
+
+.view-all-link {
+    display: inline-block;
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.view-all-link:hover {
+    color: #D4AF37;
+}
+
+/* Modal */
+.modal-content {
+    border-radius: var(--border-radius);
+    border: none;
+    box-shadow: var(--shadow);
+}
+
+.modal-header {
+    border-bottom: none;
+    padding: 1.5rem 2rem;
+}
+
+.modal-body {
+    padding: 1.5rem 2rem;
+}
+
+.modal-footer {
+    border-top: none;
+    padding: 1rem 2rem;
+}
+
+/* Footer */
+footer {
+    background: var(--navbar-background);
+    text-align: center;
+    padding: 1.5rem 0;
+    color: var(--primary-color);
+    font-size: 0.875rem;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Alerts */
+.alert {
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 0.875rem;
+}
+
+/* Media Queries */
+@media (max-width: 576px) {
+    .container {
+        padding: 0 0.5rem;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+    }
+
+    .navbar-nav {
+        text-align: center;
+    }
+
+    .nav-link {
+        font-size: 0.9rem;
+        padding: 0.5rem 0;
+    }
+
+    .toggle-container {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .toggle-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .section-card {
+        padding: 1rem;
+    }
+
+    #calendar {
+        font-size: 0.9rem;
+    }
+
+    .fc-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0.5rem;
+        gap: 0.75rem;
+    }
+
+    .fc-toolbar-title {
+        font-size: 1.1rem;
+        width: 100%;
+        text-align: center;
+    }
+
+    .fc-button-group,
+    .fc-toolbar-chunk {
+        display: flex;
+        width: 100%;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .fc-button {
+        padding: 0.6rem 1.2rem !important;
+        font-size: 0.85rem !important;
+        min-width: 80px;
+        touch-action: manipulation;
+    }
+
+    .fc-daygrid-day-frame {
+        min-height: 60px;
+    }
+
+    .fc-daygrid-day-number {
+        font-size: 0.85rem;
+        padding: 0.4rem;
+    }
+
+    .fc-daygrid-event {
+        font-size: 0.75rem;
+        padding: 0.2rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .fc-daygrid-day {
+        padding: 0.25rem;
+    }
+
+    #slotsSidebar {
+        width: 100%;
+        height: 80%;
+        top: auto;
+        bottom: -80%;
+        right: 0;
+        padding: 1rem;
+    }
+
+    #slotsSidebar.active {
+        bottom: 0;
+    }
+
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+
+    .form-control,
+    .form-select {
+        font-size: 0.9rem;
+    }
+
+    .btn-primary {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .price-display {
+        font-size: 1.1rem;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 768px) {
+    .container {
+        max-width: 540px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    .toggle-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .toggle-btn {
+        flex: 1;
+        min-width: 150px;
+        font-size: 0.95rem;
+    }
+
+    .section-card {
+        padding: 1.5rem;
+    }
+
+    #slotsSidebar {
+        width: 350px;
+    }
+
+    .fc-daygrid-day {
+        font-size: 0.9rem;
+    }
+
+    .fc-toolbar-title {
+        font-size: 1.2rem;
+    }
+
+    .fc-button {
+        padding: 0.5rem 1rem !important;
+        font-size: 0.9rem !important;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 992px) {
+    .container {
+        max-width: 720px;
+    }
+
+    #slotsSidebar {
+        width: 400px;
+    }
+
+    .toggle-btn {
+        font-size: 1rem;
+    }
+}
+
+@media (min-width: 993px) {
+    .container {
+        max-width: 960px;
+    }
+
+    #slotsSidebar {
+        width: 400px;
+    }
+}

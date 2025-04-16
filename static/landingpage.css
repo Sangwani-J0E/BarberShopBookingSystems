@@ -1,0 +1,89 @@
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70');
+    background-size: cover;
+    background-position: center;
+    padding: 100px 0;
+}
+
+/* Services Section */
+.services-section {
+    background-color: #f8f9fa;
+}
+
+/* About Section */
+.about-section {
+    background-color: #fff;
+}
+
+/* Why Choose Us Section */
+.why-choose-us-section {
+    background-color: #f8f9fa;
+}
+
+/* Pricing Section */
+.pricing-section {
+    background-color: #fff;
+}
+
+/* Contact Section */
+.contact-section {
+    background-color: #fff;
+}
+
+/* Form */
+.form-control:focus {
+    border-color: #d4a017;
+    box-shadow: 0 0 5px rgba(212, 160, 23, 0.5);
+}
+
+.btn-primary {
+    background-color: #d4a017;
+    border-color: #d4a017;
+}
+
+.btn-primary:hover {
+    background-color: #b58913;
+    border-color: #b58913;
+}
+
+/* Prices and Links */
+.price, a {
+    color: #d4a017; /* Gold accent */
+}
+
+a:hover {
+    color: #b58913;
+}
+
+/* Cards */
+.card {
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Navbar */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+/* Images */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Flash Messages */
+.alert-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.alert-danger {
+    background-color: #dc3545;
+    color: white;
+}

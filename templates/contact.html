@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - TIMO FIRST CLASS Barber Shop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/contact.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">TIMO FIRST CLASS</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/pricing">Pricing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/contact">Contact</a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/booking">Book Now</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/notifications">Notifications{% if notifications|length > 0 %} ({{ notifications|length }}){% endif %}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/history">History</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/logout">Logout</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/login">Login/Signup</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="contact-section py-5">
+        <div class="container">
+            <h1 class="text-center mb-4 animate" data-animate="fadeInUp">Get in Touch</h1>
+            <p class="text-center mb-5 animate" data-animate="fadeInUp" data-delay="0.2s">We're here to answer your questions and assist with your grooming needs.</p>
+            <div class="row">
+                <div class="col-12 col-md-6 col-lg-6 mb-4">
+                    <div class="section-card h-100 animate" data-animate="fadeIn" data-delay="0.1s">
+                        <h3 class="card-title mb-4">Contact Details</h3>
+                        <ul class="list-unstyled">
+                            <li class="mb-3">
+                                <strong>Phone:</strong>
+                                <a href="tel:+265997029155" class="text-decoration-none text-muted">+265 997 029 155</a>
+                            </li>
+                            <li class="mb-3">
+                                <strong>Location:</strong>
+                                Chirimba along M1 Road, Lunzu Stage, Blantyre, Malawi
+                            </li>
+                            <li class="mb-3">
+                                <strong>Social Media:</strong>
+                                <a href="https://www.facebook.com/TIMOFirstclassbarbershop" class="text-decoration-none text-muted" target="_blank">@TIMOFirstclassbarbershop</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-6 mb-4">
+                    <div class="section-card h-100 animate" data-animate="fadeIn" data-delay="0.2s">
+                        <h3 class="card-title mb-4">Send Us a Message</h3>
+                        <form>
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="name" placeholder="Your Name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" placeholder="Your Email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="message" class="form-label">Message</label>
+                                <textarea class="form-control" id="message" rows="5" placeholder="Your Message" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2025 TIMO FIRST CLASS Barber Shop. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animation Observer
+            const elements = document.querySelectorAll('.animate');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const el = entry.target;
+                        const animation = el.dataset.animate;
+                        const delay = el.dataset.delay || '0s';
+                        el.style.animation = `${animation} 1s ease-out ${delay} forwards`;
+                        observer.unobserve(el);
+                    }
+                });
+            }, { threshold: 0.2 });
+            elements.forEach(el => observer.observe(el));
+
+            // Periodic Image Switching
+            const cards = document.querySelectorAll('.section-card');
+            cards.forEach(card => {
+                const primaryImg = card.querySelector('.primary-img');
+                const secondaryImg = card.querySelector('.secondary-img');
+                let isPrimary = true;
+
+                const toggleImages = () => {
+                    isPrimary = !isPrimary;
+                    primaryImg.style.opacity = isPrimary ? 1 : 0;
+                    secondaryImg.style.opacity = isPrimary ? 0 : 1;
+                };
+
+                let interval = setInterval(toggleImages, 5000);
+
+                card.addEventListener('mouseenter', () => {
+                    clearInterval(interval);
+                    primaryImg.style.opacity = 0;
+                    secondaryImg.style.opacity = 1;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    primaryImg.style.opacity = 1;
+                    secondaryImg.style.opacity = 0;
+                    isPrimary = true;
+                    interval = setInterval(toggleImages, 5000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

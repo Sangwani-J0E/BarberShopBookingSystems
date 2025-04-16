@@ -1,0 +1,258 @@
+/* Gold, White, Black UI/UX for TIMO FIRST CLASS Barber Shop */
+:root {
+    --primary-color: #FFD700; /* Gold */
+    --secondary-color: #333333; /* Dark gray */
+    --background-color: #F5F5F5; /* Light gray */
+    --card-background: #FFFFFF; /* White */
+    --text-color: #000000; /* Black */
+    --muted-text: #666666; /* Medium gray */
+    --navbar-background: #000000; /* Black */
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --border-radius: 12px;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Navbar */
+.navbar {
+    background: var(--navbar-background);
+    box-shadow: var(--shadow);
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.nav-link {
+    font-size: 1rem;
+    color: var(--primary-color);
+    transition: color 0.2s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: #D4AF37; /* Darker gold */
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    padding: 0 1rem;
+}
+
+/* Headings */
+h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+h3.card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+/* Sections */
+.about-section {
+    background: var(--background-color);
+}
+
+.why-choose-us-section {
+    background: var(--background-color);
+}
+
+/* Cards */
+.section-card {
+    background: var(--card-background);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+.section-card i {
+    color: var(--primary-color);
+    transition: transform 0.3s ease;
+}
+
+.section-card:hover i {
+    transform: scale(1.1);
+}
+
+.card-text {
+    font-size: 1rem;
+    color: var(--muted-text);
+}
+
+.lead {
+    font-size: 1.25rem;
+    color: var(--text-color);
+}
+
+/* Image */
+.image-container {
+    position: relative;
+    right: -10%;
+    max-width: 500px;
+    overflow: hidden;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.img-fluid {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Animations */
+.animate {
+    opacity: 0;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Footer */
+footer {
+    background: var(--navbar-background);
+    text-align: center;
+    padding: 1.5rem 0;
+    color: var(--primary-color);
+    font-size: 0.875rem;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Media Queries */
+@media (max-width: 576px) {
+    /* Mobile */
+    .container {
+        padding: 0 0.5rem;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+    }
+
+    h3.card-title {
+        font-size: 1.1rem;
+    }
+
+    .navbar-nav {
+        text-align: center;
+    }
+
+    .nav-link {
+        font-size: 0.9rem;
+        padding: 0.5rem 0;
+    }
+
+    .section-card {
+        padding: 1rem;
+    }
+
+    .lead {
+        font-size: 1rem;
+    }
+
+    .card-text {
+        font-size: 0.9rem;
+    }
+
+    .image-container {
+        right: 0;
+        max-width: 100%;
+        margin-top: 1rem;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 768px) {
+    /* Tablet */
+    .container {
+        max-width: 540px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    h3.card-title {
+        font-size: 1.15rem;
+    }
+
+    .section-card {
+        padding: 1.25rem;
+    }
+
+    .image-container {
+        right: -5%;
+        max-width: 400px;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 992px) {
+    /* Large Tablet / Small Desktop */
+    .container {
+        max-width: 720px;
+    }
+
+    .image-container {
+        right: -8%;
+        max-width: 450px;
+    }
+}
+
+@media (min-width: 993px) {
+    /* Desktop */
+    .container {
+        max-width: 960px;
+    }
+}

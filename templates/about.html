@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - TIMO FIRST CLASS Barber Shop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/about.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">TIMO FIRST CLASS</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/about">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/pricing">Pricing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact">Contact</a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/booking">Book Now</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/notifications">Notifications{% if notifications|length > 0 %} ({{ notifications|length }}){% endif %}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/history">History</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/logout">Logout</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/login">Login/Signup</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="about-section py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="mb-4 animate" data-animate="fadeInUp">About TIMO FIRST CLASS</h1>
+                    <p class="lead animate" data-animate="fadeInUp" data-delay="0.2s">At TIMO FIRST CLASS Barber Shop, we’re more than just a place to get a haircut—we’re a destination for quality grooming and exceptional experiences. Our mission is to provide top-tier services at affordable prices, ensuring every client leaves looking and feeling their best.</p>
+                    <p class="animate" data-animate="fadeInUp" data-delay="0.4s">With a focus on hygiene and precision, our highly experienced barbers bring skill and passion to every cut, trim, and style. Whether you’re after a classic look or something bold and modern, we’ve got you covered.</p>
+                </div>
+                <div class="col-md-6">
+                    <div class="image-container animate" data-animate="slideInRight">
+                        <img src="{{ url_for('static', filename='images/BarberShop.jpg') }}" alt="Barber Shop Interior" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="why-choose-us-section py-5">
+        <div class="container">
+            <h2 class="text-center mb-5 animate" data-animate="fadeIn">Why Choose Us?</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="section-card h-100 animate" data-animate="fadeIn" data-delay="0.1s">
+                        <i class="fas fa-user-tie fa-2x mb-3"></i>
+                        <h3 class="card-title">Experienced & Friendly Barbers</h3>
+                        <p class="card-text">Our team of skilled barbers combines expertise with a welcoming vibe, making every visit a pleasure.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="section-card h-100 animate" data-animate="fadeIn" data-delay="0.2s">
+                        <i class="fas fa-map-marker-alt fa-2x mb-3"></i>
+                        <h3 class="card-title">Prime Location</h3>
+                        <p class="card-text">Conveniently located just 100m from the M1 road, we’re easy to find and access.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="section-card h-100 animate" data-animate="fadeIn" data-delay="0.3s">
+                        <i class="fas fa-shield-alt fa-2x mb-3"></i>
+                        <h3 class="card-title">Hygienic Environment</h3>
+                        <p class="card-text">We prioritize cleanliness, ensuring a safe and comfortable experience every time.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="section-card h-100 animate" data-animate="fadeIn" data-delay="0.4s">
+                        <i class="fas fa-parking fa-2x mb-3"></i>
+                        <h3 class="card-title">Spacious Parking</h3>
+                        <p class="card-text">Enjoy hassle-free visits with our secure and spacious parking lot.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="section-card h-100 animate" data-animate="fadeIn" data-delay="0.5s">
+                        <i class="fas fa-couch fa-2x mb-3"></i>
+                        <h3 class="card-title">Classy Waiting Area</h3>
+                        <p class="card-text">Relax in style with our comfortable waiting area, complete with free WiFi.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="section-card h-100 animate" data-animate="fadeIn" data-delay="0.6s">
+                        <i class="fas fa-wallet fa-2x mb-3"></i>
+                        <h3 class="card-title">Affordable Quality</h3>
+                        <p class="card-text">Premium grooming services at prices that won’t break the bank.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2025 TIMO FIRST CLASS Barber Shop. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const elements = document.querySelectorAll('.animate');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const el = entry.target;
+                        const animation = el.dataset.animate;
+                        const delay = el.dataset.delay || '0s';
+                        el.style.animation = `${animation} 1s ease-out ${delay} forwards`;
+                        observer.unobserve(el);
+                    }
+                });
+            }, { threshold: 0.2 });
+
+            elements.forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>
