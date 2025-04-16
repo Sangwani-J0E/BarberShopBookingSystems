@@ -225,6 +225,7 @@ def booking():
             )
             db.session.add(booking)
             db.session.commit()
+            app.logger.info(f'Booking created: user_id={current_user.id}, date={booking_date}, time={booking_time}, service={service_type}')
             flash('Booking successful!', 'success')
             return redirect(url_for('booking'))
         except Exception as e:
@@ -233,11 +234,16 @@ def booking():
             flash('Invalid data provided.', 'danger')
             return redirect(url_for('booking'))
 
-    user_bookings = Booking.query.filter_by(user_id=current_user.id)\
-        .order_by(
-            Booking.booking_date.is_(None), Booking.booking_date.desc(),
-            Booking.booking_time.is_(None), Booking.booking_time.desc()
-        ).all()
+    try:
+        user_bookings = Booking.query.filter_by(user_id=current_user.id)\
+            .order_by(Booking.booking_date.desc(), Booking.booking_time.desc())\
+            .limit(5).all() or []
+        app.logger.info(f'Fetched {len(user_bookings)} bookings for user {current_user.id}')
+    except Exception as e:
+        app.logger.error(f'Error fetching user bookings: {str(e)}')
+        user_bookings = []
+        flash('Unable to load bookings. Please try again.', 'danger')
+
     services = ['VIP Cut', 'Basic Cut', 'Cut and Wash', 'Kids Cut', 'Facial Treatment', 'Hair Conditioning', 'Gift Voucher']
     notifications = Notification.query.filter_by(user_id=current_user.id, read=False).all()
     selected_service = request.args.get('service')
@@ -247,25 +253,40 @@ def booking():
 @app.route('/api/bookings')
 @login_required
 def get_bookings():
-    bookings = Booking.query.filter_by(status=BookingStatus.ACTIVE.value).all()
-    holidays = Holiday.query.all()
-    events = [
-        {
-            'id': b.id,
-            'title': f"{b.service_type} - Booked",
-            'start': f"{b.booking_date}T{b.booking_time}",
-            'color': 'red'
-        } for b in bookings
-    ] + [
-        {
-            'title': f"Holiday: {h.description or 'Closed'}",
-            'start': h.date.isoformat(),
-            'allDay': True,
-            'color': 'gray',
-            'editable': False
-        } for h in holidays
-    ]
-    return jsonify(events)
+    try:
+        bookings = Booking.query.filter_by(status=BookingStatus.ACTIVE.value).all()
+        holidays = Holiday.query.all()
+        app.logger.info(f'Fetched {len(bookings)} bookings and {len(holidays)} holidays for user {current_user.id}')
+        events = []
+        for b in bookings:
+            if not b.booking_date or not b.booking_time:
+                app.logger.warning(f'Invalid booking data: ID {b.id}, date {b.booking_date}, time {b.booking_time}')
+                continue
+            try:
+                start_time = b.booking_time.strftime('%H:%M:00')
+                events.append({
+                    'id': b.id,
+                    'title': f"{b.service_type} - Booked",
+                    'start': f"{b.booking_date}T{start_time}",
+                    'color': 'red'
+                })
+            except Exception as e:
+                app.logger.error(f'Error formatting booking ID {b.id}: {str(e)}')
+        for h in holidays:
+            if not h.date:
+                app.logger.warning(f'Invalid holiday data: ID {h.id}, date {h.date}')
+                continue
+            events.append({
+                'title': f"Holiday: {h.description or 'Closed'}",
+                'start': h.date.isoformat(),
+                'allDay': True,
+                'color': 'gray',
+                'editable': False
+            })
+        return jsonify(events)
+    except Exception as e:
+        app.logger.error(f'Error in /api/bookings: {str(e)}')
+        return jsonify({'error': 'Failed to fetch bookings'}), 500
 
 @app.route('/history')
 @login_required

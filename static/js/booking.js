@@ -1,4 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Service price map (synced with app.py)
+    const servicePrices = {
+        'VIP Cut': 5000,
+        'Basic Cut': 3000,
+        'Cut and Wash': 5000,
+        'Kids Cut': 2000,
+        'Facial Treatment': 10000,
+        'Hair Conditioning': 6000
+    };
+
     // Read query parameters
     const urlParams = new URLSearchParams(window.location.search);
     const selectedService = urlParams.get('service');
@@ -28,34 +38,57 @@ document.addEventListener('DOMContentLoaded', function() {
     showCalendarBtn.addEventListener('click', showCalendar);
     showQuickBtn.addEventListener('click', showQuick);
 
+    // Quick Booking Form Price Update
+    const quickServiceSelect = document.getElementById('quick_service_type');
+    const quickPriceInput = document.getElementById('quick_price');
+    const quickPriceDisplay = document.getElementById('quick_price_display').querySelector('span');
+
+    function updateQuickPrice() {
+        const service = quickServiceSelect.value;
+        const price = servicePrices[service] || 0;
+        quickPriceInput.value = price;
+        quickPriceDisplay.textContent = price.toLocaleString();
+    }
+
+    quickServiceSelect.addEventListener('change', updateQuickPrice);
+
+    // Calendar Booking Form Price Update
+    const modalServiceSelect = document.getElementById('service_type');
+    const modalPriceInput = document.getElementById('modal_price');
+    const modalPriceDisplay = document.getElementById('modal_price_display').querySelector('span');
+
+    function updateModalPrice() {
+        const service = modalServiceSelect.value;
+        const price = servicePrices[service] || 0;
+        modalPriceInput.value = price;
+        modalPriceDisplay.textContent = price.toLocaleString();
+    }
+
+    modalServiceSelect.addEventListener('change', updateModalPrice);
+
     // Pre-fill forms if coming from pricing
-    if (selectedService && selectedPrice) {
+    if (selectedService && selectedPrice && servicePrices[selectedService]) {
         // Quick Booking Form
-        const quickServiceSelect = document.getElementById('quick_service_type');
         quickServiceSelect.value = selectedService;
-        quickServiceSelect.disabled = true; // Make readonly
-        const quickPriceInput = document.getElementById('quick_price');
+        quickServiceSelect.disabled = true;
         quickPriceInput.value = selectedPrice;
-        const quickPriceDisplay = document.getElementById('quick_price_display');
-        quickPriceDisplay.style.display = 'block';
-        quickPriceDisplay.querySelector('span').textContent = selectedPrice;
+        quickPriceDisplay.textContent = parseInt(selectedPrice).toLocaleString();
 
-        // Calendar Booking Form (Modal)
-        const modalServiceSelect = document.getElementById('service_type');
+        // Calendar Booking Form
         modalServiceSelect.value = selectedService;
-        modalServiceSelect.disabled = true; // Make readonly
-        const modalPriceInput = document.getElementById('modal_price');
+        modalServiceSelect.disabled = true;
         modalPriceInput.value = selectedPrice;
-        const modalPriceDisplay = document.getElementById('modal_price_display');
-        modalPriceDisplay.style.display = 'block';
-        modalPriceDisplay.querySelector('span').textContent = selectedPrice;
+        modalPriceDisplay.textContent = parseInt(selectedPrice).toLocaleString();
 
-        // Default to Quick Booking for pricing flow
+        // Default to Quick Booking
         showQuick();
     } else {
         // Ensure forms are editable for direct booking
-        document.getElementById('quick_service_type').disabled = false;
-        document.getElementById('service_type').disabled = false;
+        quickServiceSelect.disabled = false;
+        modalServiceSelect.disabled = false;
+        // Initialize price
+        updateQuickPrice();
+        updateModalPrice();
     }
 
     // Calendar Booking Logic
@@ -113,10 +146,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Fetch holidays
         fetch('/api/bookings')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        window.location.href = '/login';
+                    }
+                    throw new Error(`Failed to fetch bookings: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(events => {
+                if (!Array.isArray(events)) {
+                    throw new Error('Invalid bookings data: not an array');
+                }
                 holidays = events
-                    .filter(event => event.title.startsWith('Holiday:'))
+                    .filter(event => event.title && event.title.startsWith('Holiday:') && event.start)
                     .map(event => normalizeDate(event.start));
                 calendar.render();
             })
@@ -136,14 +180,29 @@ document.addEventListener('DOMContentLoaded', function() {
     function showSlots(dateStr) {
         fetch('/api/bookings')
             .then(response => {
-                if (!response.ok) throw new Error('Fetch failed');
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        window.location.href = '/login';
+                        return;
+                    }
+                    throw new Error(`Fetch failed with status ${response.status}`);
+                }
                 return response.json();
             })
             .then(bookings => {
+                if (!Array.isArray(bookings)) {
+                    throw new Error('Invalid bookings data: not an array');
+                }
                 var slots = generateSlots(dateStr, bookings);
                 var container = document.getElementById('slotsContainer');
                 container.innerHTML = '';
                 document.getElementById('selectedDate').textContent = dateStr;
+
+                if (slots.length === 0) {
+                    container.innerHTML = '<p>No available slots for this date.</p>';
+                    sidebar.classList.add('active');
+                    return;
+                }
 
                 slots.forEach(slot => {
                     var div = document.createElement('div');
@@ -162,6 +221,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             document.getElementById('booking_time').value = slot.time;
                             sidebar.classList.remove('active');
                             $('#bookingModal').modal('show');
+                            updateModalPrice();
                         });
                         div.appendChild(bookBtn);
                     }
@@ -171,7 +231,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Error in showSlots:', error);
-                document.getElementById('slotsContainer').innerHTML = '<p>Error loading slots.</p>';
+                document.getElementById('slotsContainer').innerHTML = `<p>Error loading slots: ${error.message}</p>`;
                 sidebar.classList.add('active');
             });
     }
@@ -181,7 +241,15 @@ document.addEventListener('DOMContentLoaded', function() {
         for (var h = 7; h < 20; h++) {
             if (h === 12) continue;
             var time = `${h.toString().padStart(2, '0')}:00`;
-            var booked = bookings.some(b => b.start === `${dateStr}T${time}:00`);
+            // Normalize booking start times to handle missing seconds
+            var booked = bookings.some(b => {
+                if (!b.start) return false;
+                const startParts = b.start.split('T');
+                if (startParts.length !== 2) return false;
+                const bookingDate = startParts[0];
+                const bookingTime = startParts[1].startsWith(time) && bookingDate === dateStr;
+                return bookingTime;
+            });
             slots.push({ time: time, available: !booked });
         }
         return slots;
@@ -199,16 +267,35 @@ document.addEventListener('DOMContentLoaded', function() {
         if (date && time) {
             slotStatus.textContent = 'Checking availability...';
             fetch('/api/bookings')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            window.location.href = '/login';
+                            return;
+                        }
+                        throw new Error(`Fetch failed with status ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(bookings => {
-                    const isHoliday = bookings.some(b => b.title.startsWith('Holiday:') && normalizeDate(b.start) === date);
+                    if (!Array.isArray(bookings)) {
+                        throw new Error('Invalid bookings data: not an array');
+                    }
+                    const isHoliday = bookings.some(b => b.title && b.title.startsWith('Holiday:') && normalizeDate(b.start) === date);
                     if (isHoliday) {
                         slotStatus.textContent = 'This date is a holiday and cannot be booked.';
                         slotStatus.className = 'text-danger';
                         quickBookBtn.disabled = true;
                         return;
                     }
-                    const isBooked = bookings.some(b => b.start === `${date}T${time}:00`);
+                    const isBooked = bookings.some(b => {
+                        if (!b.start) return false;
+                        const startParts = b.start.split('T');
+                        if (startParts.length !== 2) return false;
+                        const bookingDate = startParts[0];
+                        const bookingTime = startParts[1].startsWith(time) && bookingDate === date;
+                        return bookingTime;
+                    });
                     if (isBooked) {
                         slotStatus.textContent = 'This slot is already booked.';
                         slotStatus.className = 'text-danger';
@@ -221,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                 .catch(error => {
                     console.error('Error checking slot:', error);
-                    slotStatus.textContent = 'Error checking availability.';
+                    slotStatus.textContent = `Error checking availability: ${error.message}`;
                     slotStatus.className = 'text-danger';
                     quickBookBtn.disabled = true;
                 });
@@ -235,6 +322,7 @@ document.addEventListener('DOMContentLoaded', function() {
     quickDate.addEventListener('change', checkSlotAvailability);
     quickTime.addEventListener('change', checkSlotAvailability);
 
-    // Trigger initial availability check if date/time are pre-filled
+    // Trigger initial availability and price check
     checkSlotAvailability();
+    if (quickServiceSelect.value) updateQuickPrice();
 });
