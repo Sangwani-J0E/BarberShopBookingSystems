@@ -7,17 +7,23 @@ from datetime import datetime, timedelta, date
 import re
 from enum import Enum
 from functools import wraps
+from paychangu import PayChanguClient
+from paychangu.models.payment import Payment
+import uuid
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:1234@localhost/barbershop_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=30)
+app.config['PAYCHANGU_SECRET_KEY'] = 'sec-live-dwwqnF1d1I1utzZSIgWoZ8LOPPseDSxI'  # Replace with your PayChangu secret key
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.admin_login_view = 'admin_login'
+
+paychangu_client = PayChanguClient(secret_key=app.config['PAYCHANGU_SECRET_KEY'])
 
 class BookingStatus(Enum):
     ACTIVE = 'active'
@@ -47,6 +53,8 @@ class Booking(db.Model):
     booking_date = db.Column(db.Date, nullable=False)
     booking_time = db.Column(db.Time, nullable=False)
     status = db.Column(db.String(20), nullable=False, default=BookingStatus.ACTIVE.value)
+    payment_id = db.Column(db.String(100))
+    payment_status = db.Column(db.String(20), default='pending')
 
 class Holiday(db.Model):
     __tablename__ = 'holidays'
@@ -91,6 +99,16 @@ def is_strong_password(password):
         return False, "Password must contain at least one special character (!@#$%^&*)"
     return True, ""
 
+SERVICE_PRICES = {
+    'VIP Cut': 5000,
+    'Basic Cut': 3000,
+    'Cut and Wash': 5000,
+    'Kids Cut': 2000,
+    'Facial Treatment': 10000,
+    'Hair Conditioning': 6000,
+    'Gift Voucher': 5000
+}
+
 @app.route('/')
 def index():
     notifications = Notification.query.filter_by(user_id=current_user.id, read=False).all() if current_user.is_authenticated else []
@@ -103,14 +121,7 @@ def about():
 
 @app.route('/pricing')
 def pricing():
-    services = {
-        'VIP Cut': 'K5000',
-        'Basic Cut': 'K3000',
-        'Cut and Wash': 'K5000',
-        'Kids Cut': 'K2000',
-        'Facial Treatment': 'K10,000',
-        'Hair Conditioning': 'K6000'
-    }
+    services = SERVICE_PRICES
     notifications = Notification.query.filter_by(user_id=current_user.id, read=False).all() if current_user.is_authenticated else []
     return render_template('pricing.html', services=services, notifications=notifications)
 
@@ -189,51 +200,110 @@ def logout():
     flash('Logged out successfully.', 'success')
     return redirect(url_for('index'))
 
-@app.route('/booking', methods=['GET', 'POST'])
+@app.route('/initiate_payment', methods=['POST'])
 @login_required
-def booking():
-    if request.method == 'POST':
-        customer_name = request.form.get('customer_name')
-        service_type = request.form.get('service_type')
-        booking_date = request.form.get('booking_date')
-        booking_time = request.form.get('booking_time')
+def initiate_payment():
+    try:
+        data = request.get_json()
+        customer_name = data.get('customer_name')
+        service_type = data.get('service_type')
+        booking_date = data.get('booking_date')
+        booking_time = data.get('booking_time')
+        price = data.get('price')
 
-        try:
-            booking_date_obj = datetime.strptime(booking_date, '%Y-%m-%d').date()
-            booking_time_obj = datetime.strptime(booking_time, '%H:%M').time()
+        if not all([customer_name, service_type, booking_date, booking_time, price]):
+            return jsonify({'success': False, 'message': 'Missing required fields'}), 400
 
-            if Holiday.query.filter_by(date=booking_date_obj).first():
-                flash('This date is a holiday and cannot be booked.', 'danger')
-                return redirect(url_for('booking'))
+        booking_date_obj = datetime.strptime(booking_date, '%Y-%m-%d').date()
+        booking_time_obj = datetime.strptime(booking_time, '%H:%M').time()
 
-            existing_booking = Booking.query.filter_by(
-                booking_date=booking_date_obj,
-                booking_time=booking_time_obj,
-                status=BookingStatus.ACTIVE.value
-            ).first()
-            if existing_booking:
-                flash('This slot is already booked.', 'danger')
-                return redirect(url_for('booking'))
+        if Holiday.query.filter_by(date=booking_date_obj).first():
+            return jsonify({'success': False, 'message': 'This date is a holiday'}), 400
 
+        existing_booking = Booking.query.filter_by(
+            booking_date=booking_date_obj,
+            booking_time=booking_time_obj,
+            status=BookingStatus.ACTIVE.value
+        ).first()
+        if existing_booking:
+            return jsonify({'success': False, 'message': 'This slot is already booked'}), 400
+
+        tx_ref = f"booking-{uuid.uuid4()}"
+        payment = Payment(
+            amount=int(price),
+            currency="MWK",
+            email=current_user.email,
+            first_name=customer_name.split()[0],
+            last_name=customer_name.split()[-1] if len(customer_name.split()) > 1 else "",
+            callback_url="http://127.0.0.1:5000/payment_callback",
+            return_url="http://127.0.0.1:5000/booking",
+            tx_ref=tx_ref,
+            customization={
+                "title": f"TIMO FIRST CLASS - {service_type}",
+                "description": f"Payment for {service_type} on {booking_date} at {booking_time}"
+            }
+        )
+        response = paychangu_client.initiate_transaction(payment)
+        if response.get('status') == 'success':
             booking = Booking(
                 user_id=current_user.id,
                 customer_name=customer_name,
                 service_type=service_type,
                 booking_date=booking_date_obj,
                 booking_time=booking_time_obj,
-                status=BookingStatus.ACTIVE.value
+                status=BookingStatus.ACTIVE.value,
+                payment_id=tx_ref,
+                payment_status='pending'
             )
             db.session.add(booking)
             db.session.commit()
-            app.logger.info(f'Booking created: user_id={current_user.id}, date={booking_date}, time={booking_time}, service={service_type}')
-            flash('Booking successful!', 'success')
-            return redirect(url_for('booking'))
-        except Exception as e:
-            db.session.rollback()
-            app.logger.error(f'Booking error: {str(e)}')
-            flash('Invalid data provided.', 'danger')
-            return redirect(url_for('booking'))
+            app.logger.info(f'Initiated payment: tx_ref={tx_ref}, booking_id={booking.id}')
+            return jsonify({
+                'success': True,
+                'payment_url': response['data']['checkout_url'],
+                'booking_id': booking.id
+            })
+        else:
+            app.logger.error(f'Payment initiation failed: {response}')
+            return jsonify({'success': False, 'message': 'Payment initiation failed'}), 400
+    except Exception as e:
+        app.logger.error(f'Initiate payment error: {str(e)}')
+        return jsonify({'success': False, 'message': 'Server error'}), 500
 
+@app.route('/payment_callback', methods=['POST'])
+def payment_callback():
+    try:
+        data = request.get_json()
+        tx_ref = data.get('tx_ref')
+        booking = Booking.query.filter_by(payment_id=tx_ref).first()
+        if not booking:
+            app.logger.error(f'Callback: Booking not found for tx_ref={tx_ref}')
+            return jsonify({'success': False}), 404
+
+        response = paychangu_client.verify_transaction(tx_ref)
+        if response.get('status') == 'success' and response['data']['status'] == 'success':
+            booking.payment_status = 'completed'
+            db.session.commit()
+            app.logger.info(f'Payment verified: tx_ref={tx_ref}, booking_id={booking.id}')
+            notification = Notification(
+                user_id=booking.user_id,
+                message=f"Your payment for {booking.service_type} on {booking.booking_date} at {booking.booking_time} was successful."
+            )
+            db.session.add(notification)
+            db.session.commit()
+        else:
+            booking.payment_status = 'failed'
+            booking.status = BookingStatus.CANCELED.value
+            db.session.commit()
+            app.logger.error(f'Payment verification failed: tx_ref={tx_ref}')
+        return jsonify({'success': True})
+    except Exception as e:
+        app.logger.error(f'Callback error: {str(e)}')
+        return jsonify({'success': False}), 500
+
+@app.route('/booking', methods=['GET'])
+@login_required
+def booking():
     try:
         user_bookings = Booking.query.filter_by(user_id=current_user.id)\
             .order_by(Booking.booking_date.desc(), Booking.booking_time.desc())\
@@ -244,11 +314,11 @@ def booking():
         user_bookings = []
         flash('Unable to load bookings. Please try again.', 'danger')
 
-    services = ['VIP Cut', 'Basic Cut', 'Cut and Wash', 'Kids Cut', 'Facial Treatment', 'Hair Conditioning', 'Gift Voucher']
+    services = list(SERVICE_PRICES.keys())
     notifications = Notification.query.filter_by(user_id=current_user.id, read=False).all()
     selected_service = request.args.get('service')
     selected_price = request.args.get('price')
-    return render_template('booking.html', user_bookings=user_bookings, services=services, now=datetime.now(), notifications=notifications, selected_service=selected_service, selected_price=selected_price)
+    return render_template('booking.html', user_bookings=user_bookings, services=services, now=datetime.now(), notifications=notifications, selected_service=selected_service, selected_price=selected_price, service_prices=SERVICE_PRICES)
 
 @app.route('/api/bookings')
 @login_required
@@ -301,7 +371,7 @@ def history():
         Booking.user_id == current_user.id,
         (Booking.status != BookingStatus.ACTIVE.value) | (Booking.booking_date < today)
     ).all()
-    services = ['VIP Cut', 'Basic Cut', 'Cut and Wash', 'Kids Cut', 'Facial Treatment', 'Hair Conditioning', 'Gift Voucher']
+    services = list(SERVICE_PRICES.keys())
     notifications = Notification.query.filter_by(user_id=current_user.id, read=False).all()
     return render_template('history.html', current_bookings=current_bookings, previous_bookings=previous_bookings, services=services, now=datetime.now(), notifications=notifications)
 
@@ -420,7 +490,7 @@ def admin_cancel_booking(booking_id):
 @admin_required
 def admin_reschedule_booking(booking_id):
     booking = Booking.query.get_or_404(booking_id)
-    services = ['VIP Cut', 'Basic Cut', 'Cut and Wash', 'Kids Cut', 'Facial Treatment', 'Hair Conditioning', 'Gift Voucher']
+    services = list(SERVICE_PRICES.keys())
     if request.method == 'POST':
         service_type = request.form.get('service_type')
         booking_date = request.form.get('booking_date')

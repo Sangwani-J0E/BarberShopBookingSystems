@@ -5,7 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booking History - TIMO FIRST CLASS Barber Shop</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">
+    <style>
+        .icon-text {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .icon-text i {
+            font-size: 1.1rem;
+        }
+        .service-icon {
+            color: #FFD700; /* Gold theme */
+        }
+        .status-icon.active {
+            color: #28a745; /* Green for active */
+        }
+        .status-icon.canceled {
+            color: #dc3545; /* Red for canceled */
+        }
+        .payment-icon.completed {
+            color: #28a745; /* Green for completed */
+        }
+        .payment-icon.pending {
+            color: #ffc107; /* Yellow for pending */
+        }
+        .payment-icon.failed {
+            color: #dc3545; /* Red for failed */
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg">
@@ -62,15 +92,40 @@
                 {% for booking in current_bookings %}
                     <div class="col-12 col-md-6 col-lg-4 mb-4">
                         <div class="section-card h-100 animate" data-animate="fadeIn" data-delay="{{ loop.index0 * 0.1 }}s">
-                            <div class="card-image">
-                                <img src="{{ url_for('static', filename='images/current-booking-1.jpg') }}" alt="Current Booking 1" class="card-img primary-img">
-                                <img src="{{ url_for('static', filename='images/current-booking-2.jpg') }}" alt="Current Booking 2" class="card-img secondary-img">
-                            </div>
                             <h4 class="card-title">{{ booking.customer_name }}</h4>
                             <p class="card-text">
-                                {{ booking.service_type }}<br>
-                                {{ booking.booking_date }} at {{ booking.booking_time.strftime('%H:%M') }}<br>
-                                Status: {{ booking.status|capitalize }}
+                                <div class="icon-text">
+                                    {% if booking.service_type in ['VIP Cut', 'Basic Cut', 'Cut and Wash', 'Kids Cut'] %}
+                                        <i class="bi bi-scissors service-icon"></i>
+                                    {% elif booking.service_type == 'Facial Treatment' %}
+                                        <i class="bi bi-mask service-icon"></i>
+                                    {% elif booking.service_type == 'Hair Conditioning' %}
+                                        <i class="bi bi-droplet service-icon"></i>
+                                    {% else %}
+                                        <i class="bi bi-gear service-icon"></i>
+                                    {% endif %}
+                                    {{ booking.service_type }}
+                                </div>
+                                <div class="icon-text">
+                                    <i class="bi bi-calendar-event"></i>
+                                    {{ booking.booking_date }} at {{ booking.booking_time.strftime('%H:%M') }}
+                                </div>
+                                <div class="icon-text">
+                                    <i class="bi bi-check-circle status-icon {{ booking.status }}"></i>
+                                    Status: {{ booking.status|capitalize }}
+                                </div>
+                                <div class="icon-text">
+                                    {% if booking.payment_status == 'completed' %}
+                                        <i class="bi bi-cash payment-icon completed"></i>
+                                    {% elif booking.payment_status == 'pending' %}
+                                        <i class="bi bi-hourglass-split payment-icon pending"></i>
+                                    {% elif booking.payment_status == 'failed' %}
+                                        <i class="bi bi-exclamation-triangle payment-icon failed"></i>
+                                    {% else %}
+                                        <i class="bi bi-question-circle payment-icon"></i>
+                                    {% endif %}
+                                    Payment: {{ booking.payment_status|capitalize }}
+                                </div>
                             </p>
                             <div class="card-actions">
                                 <button class="btn btn-sm btn-danger manage-btn cancel-btn" data-id="{{ booking.id }}">Cancel</button>
@@ -91,10 +146,6 @@
                 {% for booking in previous_bookings %}
                     <div class="col-12 col-md-6 col-lg-4 mb-4">
                         <div class="section-card h-100 animate" data-animate="fadeIn" data-delay="{{ loop.index0 * 0.1 }}s">
-                            <div class="card-image">
-                                <img src="{{ url_for('static', filename='images/previous-booking-1.jpg') }}" alt="Previous Booking 1" class="card-img primary-img">
-                                <img src="{{ url_for('static', filename='images/previous-booking-2.jpg') }}" alt="Previous Booking 2" class="card-img secondary-img">
-                            </div>
                             <h4 class="card-title">{{ booking.customer_name }}</h4>
                             <p class="card-text">
                                 {{ booking.service_type }}<br>
